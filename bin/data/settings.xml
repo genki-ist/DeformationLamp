@@ -1,0 +1,14 @@
+<group>
+	<scale>1.35976</scale>
+<group/>
+	<scaleFactor>1.2</scaleFactor>
+	<freq>1.5</freq>
+	<faceAreaParam>1.635</faceAreaParam>
+	<chin>0.335</chin>
+	<leftEyebrow>0.67</leftEyebrow>
+	<rightEyebrow>0.67</rightEyebrow>
+	<leftEye>0.325</leftEye>
+	<rightEye>0.325</rightEye>
+	<leftMouse>1.19</leftMouse>
+	<rightMouse>0.875</rightMouse>
+</group>

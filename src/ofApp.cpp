@@ -7,6 +7,7 @@ void ofApp::setup(){
     ofBackground(0);
     
     pix.allocate(WIDTH, HEIGHT, OF_PIXELS_GRAY);
+    vidPix.allocate(VIDEO_WIDTH, VIDEO_HEIGHT, OF_PIXELS_GRAY);
     
     pos = ofVec2f(0,0);
     target = ofVec2f(700,0);
@@ -18,10 +19,19 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+
+    pix = gui->_grayPixels;
+    vidPix = gui->_grayVidPixels;
     
     //---get difference texture
-    pix = gui->_grayPixels;
-    tex.loadData(pix.getData(), WIDTH, HEIGHT, GL_LUMINANCE);
+    if(gui->_imgOrMov == true)
+    {
+        tex.loadData(pix.getData(), WIDTH, HEIGHT, GL_LUMINANCE);
+    }
+    else
+    {
+        tex.loadData(vidPix.getData(), VIDEO_WIDTH, VIDEO_HEIGHT, GL_LUMINANCE);
+    }
     
     //---move texture position with easing
     if(gui->_slide != flag)

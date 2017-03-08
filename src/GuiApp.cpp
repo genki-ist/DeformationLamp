@@ -8,6 +8,7 @@
 
 #include "GuiApp.hpp"
 
+//--------------------------------------------------------------
 void GuiApp::setup(){
     
     ofSetVerticalSync(true);
@@ -33,9 +34,13 @@ void GuiApp::setup(){
         _videos.assign(_vidDir.size(), ofVideoPlayer());
     }
     
-    for(int i = 0; i < (int)_vidDir.size(); i++){
+//    for(int i = 0; i < (int)_vidDir.size(); i++){
+    for(int i = 0; i < 1; i++){
         _videos[i].load(_vidDir.getPath(i));
+        _videos[i].play();
     }
+
+    _vidImage.load("out1.jpg");
 
     _currentImageNum = 0;
     _currentImageNumBuf = 0;
@@ -62,7 +67,11 @@ void GuiApp::setup(){
     ofxCv::convertColor(_images[_currentImageNum], _grayImg, CV_RGB2GRAY);
     _grayImg.update();
     
+    ofxCv::convertColor(_vidImage, _grayVidImg, CV_RGB2GRAY);
+    _grayVidImg.update();
+    
     _grayPixels.allocate(WIDTH, HEIGHT, OF_PIXELS_GRAY);
+    _grayVidPixels.allocate(VIDEO_WIDTH, VIDEO_HEIGHT, OF_PIXELS_GRAY);
     
     for(int i=0;i<WIDTH;i++)
     {
@@ -73,10 +82,19 @@ void GuiApp::setup(){
     }
     _grayDiff.allocate(_grayPixels);
     
+    for(int i=0;i<VIDEO_WIDTH;i++)
+    {
+        for(int j=0;j<VIDEO_HEIGHT;j++)
+        {
+            _grayVidPixels[j*VIDEO_WIDTH+i] = _grayVidImg.getPixels()[j*VIDEO_WIDTH + i];
+        }
+    }
+    _grayVidDiff.allocate(_grayVidPixels);
+    
     //---gui setup
     _gui.setup();
     _gui.setPosition(700, 0);
-//    _gui.add(_imgOrMov.set("imgOrMov",true));
+    _gui.add(_imgOrMov.set("imgOrMov",true));
     _gui.add(_movingScale.set("movingScale",0.0,0.0,1.5));
     _gui.add(_scaleFactor.set("scaleFactor",1.3,1.0,2.0));
     _gui.add(_movingFreq.set("freq",1.5,0.1,3.0));
@@ -116,6 +134,11 @@ void GuiApp::updateTracker(){
             _ctrl.push_back(make_pair(ctrlPos,ctrlPos));
         }
         
+        ofVec2f pos = ofVec2f((_imgMesh.getVertices()[1]+_imgMesh.getVertices()[31])*0.5);
+        _ctrl.push_back(make_pair(pos, pos));
+        ofVec2f pos2 = ofVec2f((_imgMesh.getVertices()[15]+_imgMesh.getVertices()[35])*0.5);
+        _ctrl.push_back(make_pair(pos2, pos2));
+        
         //---add boundary face points
 //        ofPolyline outline = _imgTracker.getImageFeature(ofxFaceTracker::ALL_FEATURES);
         ofPolyline outline = _imgTracker.getImageFeature(ofxFaceTracker::FACE_OUTLINE);
@@ -123,6 +146,8 @@ void GuiApp::updateTracker(){
         for(int i = 0; i < outline.size(); i+=1) {
             ofVec2f point((outline[i] - position) * _scaleFactor + position);
             _ctrl.push_back(make_pair(point, point));
+//            ofVec2f point2((outline[i] - position) * (_scaleFactor+0.3) + position);
+//            _ctrl.push_back(make_pair(point2, point2));
         }
     }
     
@@ -132,9 +157,10 @@ void GuiApp::updateTracker(){
     _tex.loadData(_dstPix);
 }
 
+//--------------------------------------------------------------
 void GuiApp::update(){
     
-//    if(_imgOrMov){
+    if(_imgOrMov){
         //---move control points
         if(_ctrl.size() > 0)
         {
@@ -196,56 +222,73 @@ void GuiApp::update(){
             }
             _grayDiff.loadData(_grayPixels.getData(), WIDTH, HEIGHT, GL_LUMINANCE);
         }
-//    }
-//    else
-//    {
-//        _videos[0].update();
-//        
-//        if(_videos[0].isFrameNew())
-//        {
-//            ofxCv::convertColor(_videos[0], _grayVideo, CV_RGB2GRAY);
-//            _grayVideo.update();
-//            
-//            for(int i=0;i<WIDTH;i++)
-//            {
-//                for(int j=0;j<HEIGHT;j++)
-//                {
-//                    int diff = _grayVideo.getPixels()[j*WIDTH + i] - _grayVidImg.getPixels()[j*WIDTH + i];
-//                    diff = (int)ofMap(diff, -255, 255, 0, 255);
-//                    _grayPixels[j*WIDTH+i] = (unsigned char)diff;
-//                }
-//            }
-//            _grayDiff.loadData(_grayPixels.getData(), WIDTH, HEIGHT, GL_LUMINANCE);
-//        }
-//
-//    }
+    }
+    else
+    {
+        _videos[0].update();
+        
+        if(_videos[0].isFrameNew())
+        {
+            ofxCv::convertColor(_videos[0], _grayVideo, CV_RGB2GRAY);
+            _grayVideo.update();
+            
+            for(int i=0;i<VIDEO_WIDTH;i++)
+            {
+                for(int j=0;j<VIDEO_HEIGHT;j++)
+                {
+                    int diff = _grayVideo.getPixels()[j*VIDEO_WIDTH + i] - _grayVidImg.getPixels()[j*VIDEO_WIDTH + i];
+                    diff = (int)ofMap(diff, -255, 255, 0, 255);
+                    _grayVidPixels[j*VIDEO_WIDTH+i] = (unsigned char)diff;
+                }
+            }
+            _grayVidDiff.loadData(_grayVidPixels.getData(), VIDEO_WIDTH, VIDEO_HEIGHT, GL_LUMINANCE);
+        }
+
+    }
 }
 
+//--------------------------------------------------------------
 void GuiApp::draw(){
     ofSetColor(255);
-    _tex.draw(0,0);
-    _grayDiff.draw(0, HEIGHT);
     
-    if(_bDrawPoints)
+    if(_imgOrMov)
     {
-        _imgMesh.drawWireframe();
-        
-        for(int i=0;i<_ctrl.size();i++)
+        _tex.draw(0,0);
+        _grayDiff.draw(0, HEIGHT);
+    
+        if(_bDrawPoints)
         {
-            ofSetColor(255, 0, 0);
-            ofDrawCircle(_ctrl[i].first, 3);
-            ofSetColor(255, 255, 0);
-            ofDrawCircle(_ctrl[i].second, 3);
+            _imgMesh.drawWireframe();
+        
+            for(int i=0;i<_ctrl.size();i++)
+            {
+                ofSetColor(255, 0, 0);
+                ofDrawCircle(_ctrl[i].first, 3);
+                ofSetColor(255, 255, 0);
+                ofDrawCircle(_ctrl[i].second, 3);
+            }
         }
     }
-    _gui.draw();
+    else
+    {
+        _videos[0].draw(0,0);
+        _grayVidDiff.draw(0, HEIGHT);
+    }
+    
+    if(_bDrawGui) _gui.draw();
 
 }
 
+//--------------------------------------------------------------
 void GuiApp::keyPressed(int key){
     if(key == ' ')
     {
         _bDrawPoints = !_bDrawPoints;
+    }
+    
+    if(key == 'g')
+    {
+        _bDrawGui = !_bDrawGui;
     }
     
     if(key == 'c')

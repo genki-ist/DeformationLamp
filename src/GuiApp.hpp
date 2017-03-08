@@ -16,6 +16,8 @@
 
 #define WIDTH 640
 #define HEIGHT 480
+#define VIDEO_WIDTH 960
+#define VIDEO_HEIGHT 540
 
 class GuiApp : public ofBaseApp {
 public:
@@ -35,6 +37,7 @@ public:
     
     ofDirectory _vidDir;
     vector<ofVideoPlayer> _videos;
+    ofImage         _vidImage;
     ofImage         _grayVideo;
     ofImage         _grayVidImg;
     
@@ -59,6 +62,9 @@ public:
     ofPixels        _grayPixels;
     ofTexture       _grayDiff;
     
+    ofPixels        _grayVidPixels;
+    ofTexture       _grayVidDiff;
+    
     //---gui
     ofxPanel        _gui;
     ofParameter<bool> _imgOrMov;
@@ -78,6 +84,8 @@ public:
     ofParameter<ofVec2f> _projectionPos;
     ofParameter<float> _projectionScale;
     ofParameter<int> _projectionSlide;
+    
+    bool _bDrawGui = false;
     
 
 };

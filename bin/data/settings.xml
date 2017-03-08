@@ -1,18 +1,19 @@
 <group>
-	<movingScale>0.041024</movingScale>
-	<scaleFactor>1.5</scaleFactor>
-	<freq>1.1585</freq>
+	<movingScale>0.0183241</movingScale>
+	<scaleFactor>1.375</scaleFactor>
+	<freq>1.202</freq>
 	<faceAreaParam>1</faceAreaParam>
-	<chin>0.36</chin>
-	<leftEyebrow>0.75</leftEyebrow>
-	<rightEyebrow>0.75</rightEyebrow>
-	<leftEye>0.3</leftEye>
-	<rightEye>0.42</rightEye>
-	<leftMouse>1.46</leftMouse>
-	<rightMouse>1.32</rightMouse>
+	<chin>0.25</chin>
+	<leftEyebrow>0.43</leftEyebrow>
+	<rightEyebrow>0.42</rightEyebrow>
+	<leftEye>0.5</leftEye>
+	<rightEye>0.5</rightEye>
+	<leftMouse>1.98</leftMouse>
+	<rightMouse>1.98</rightMouse>
 	<slide>0</slide>
 	<pos>0, 0</pos>
 	<scale>1</scale>
     <slideAmount>700</slideAmount>
 <group/>
+<imgOrMov>1</imgOrMov>
 </group>

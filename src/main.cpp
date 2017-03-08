@@ -15,15 +15,15 @@ int main( ){
     settings.height = 800;
     settings.setPosition(ofVec2f(1920,0));
 #elif DEBUG_MODE == 2
-    settings.width = 800;
-    settings.height = 480;
+    settings.width = 960;
+    settings.height = 540;
     settings.setPosition(ofVec2f(1200,0));
 #endif
     settings.resizable = true;
     shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
     
     settings.width = 960;
-    settings.height = 960;
+    settings.height = 1080;
     settings.setPosition(ofVec2f(0,0));
     settings.resizable = false;
     shared_ptr<ofAppBaseWindow> guiWindow = ofCreateWindow(settings);

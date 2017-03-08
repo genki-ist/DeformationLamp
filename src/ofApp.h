@@ -6,6 +6,8 @@
 
 #define WIDTH 640
 #define HEIGHT 480
+#define VIDEO_WIDTH 960
+#define VIDEO_HEIGHT 540
 
 class ofApp : public ofBaseApp{
     
@@ -20,6 +22,7 @@ public:
     
     ofTexture tex;
     ofPixels pix;
+    ofPixels vidPix;
     
     ofVec2f pos;
     ofVec2f target;
